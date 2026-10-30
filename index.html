@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ApocalypseCraft ESP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: #0a0a0f;
+  color: #e2e2ea;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.bg-glow {
+  position: fixed;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  filter: blur(150px);
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: 0;
+}
+.glow-1 { background: #7c3aed; top: -200px; left: -100px; }
+.glow-2 { background: #06b6d4; bottom: -200px; right: -100px; }
+.container {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 2rem;
+  max-width: 520px;
+}
+.logo {
+  font-size: 3rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #a78bfa, #7c3aed, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.5rem;
+}
+.subtitle {
+  color: #71717a;
+  font-size: 0.95rem;
+  margin-bottom: 2.5rem;
+  font-weight: 400;
+}
+.version-badge {
+  display: inline-block;
+  background: rgba(124, 58, 237, 0.15);
+  border: 1px solid rgba(124, 58, 237, 0.3);
+  color: #a78bfa;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+}
+.download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  color: #fff;
+  text-decoration: none;
+  padding: 1rem 2.5rem;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 0 30px rgba(124, 58, 237, 0.3);
+  border: none;
+  cursor: pointer;
+}
+.download-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 50px rgba(124, 58, 237, 0.5);
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+}
+.download-btn svg {
+  width: 20px; height: 20px;
+  fill: currentColor;
+}
+.info {
+  margin-top: 2rem;
+  color: #52525b;
+  font-size: 0.8rem;
+}
+.loading { opacity: 0.5; pointer-events: none; }
+</style>
+</head>
+<body>
+<div class="bg-glow glow-1"></div>
+<div class="bg-glow glow-2"></div>
+<div class="container">
+  <div class="logo">ApocalypseCraft</div>
+  <p class="subtitle">ESP pour Minecraft Bedrock</p>
+  <div class="version-badge" id="version">Chargement...</div>
+  <br><br>
+  <a id="dl-btn" class="download-btn loading" href="#">
+    <svg viewBox="0 0 24 24"><path d="M12 16l-5-5h3V4h4v7h3l-5 5zm-7 4h14v-2H5v2z"/></svg>
+    Télécharger
+  </a>
+  <p class="info" id="size"></p>
+</div>
+<script>
+const REPO = 'ImSombre/TrollESP-releases';
+const ASSET_NAME = 'ApocalypseCraft.exe';
+
+async function init() {
+  try {
+    const res = await fetch(`https://api.github.com/repos/${REPO}/releases/latest`);
+    const data = await res.json();
+    const asset = data.assets.find(a => a.name === ASSET_NAME);
+    if (!asset) throw new Error('Asset not found');
+
+    document.getElementById('version').textContent = data.tag_name;
+    const btn = document.getElementById('dl-btn');
+    btn.href = asset.browser_download_url;
+    btn.classList.remove('loading');
+    const sizeMB = (asset.size / 1048576).toFixed(0);
+    document.getElementById('size').textContent = `Windows · ${sizeMB} MB`;
+  } catch (e) {
+    document.getElementById('version').textContent = 'Erreur';
+    const btn = document.getElementById('dl-btn');
+    btn.href = `https://github.com/${REPO}/releases/latest/download/${ASSET_NAME}`;
+    btn.classList.remove('loading');
+  }
+}
+init();
+</script>
+</body>
+</html>
